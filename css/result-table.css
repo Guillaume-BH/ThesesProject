@@ -1,0 +1,45 @@
+th {
+	position: relative;
+}
+
+.order-btn {
+	position: absolute;
+	right: 5px;
+	top: 0;
+
+	width: 20px;
+	height: 38px;
+	border-style: none;
+	opacity: 0.3;
+
+	background-color: #0000;
+	background-image: url("../img/arrow-down.png");
+	background-size: contain;
+	background-position-y: center;
+	background-repeat: no-repeat;
+}
+
+.order-btn-selected {
+	opacity: 0.7;
+}
+
+.order-btn-reverse {
+	transform: rotateZ(180deg);
+}
+
+.table-row-more {
+	display: table-row;
+	background-color: #eee;
+}
+
+.table-row-more table {
+	margin: 0;
+}
+
+.table-row-more > td {
+	padding: 0;
+}
+
+.table-row-hidden {
+	display: none;
+}

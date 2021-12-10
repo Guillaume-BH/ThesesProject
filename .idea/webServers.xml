@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="62865b44-225b-4a7d-bd62-de339774f4bf" name="thesesfr" url="">
+        <fileTransfer rootFolder="/home/3in2/guillaume.grisolet" accessType="SFTP" host="linuxpedago.u-pem.fr" port="22" sshConfigId="53fdd339-d248-4ec3-9701-3099dc47e5b3" sshConfig="guillaume.grisolet@linuxpedago.u-pem.fr:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

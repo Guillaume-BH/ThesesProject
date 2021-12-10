@@ -1,0 +1,37 @@
+header{
+    margin-top: auto;
+    text-align: center;
+}
+
+#form{
+    margin-right: 20%;
+    margin-top: 5%;
+    margin-left: 30%;
+    text-align: center;
+    margin-bottom: 30%;
+}
+
+
+.filter{
+    text-align: center;
+}
+
+.logo{
+    margin-top: 2%;
+    text-align: center;
+}
+
+.footer-text{
+    margin-bottom: 30%;
+    text-align: center;
+}
+
+.navigation{
+    font-size: 70%;
+    flex-wrap: nowrap;
+}
+
+
+
+
+
