@@ -1,13 +1,9 @@
 <?php
 ini_set('max_execution_time', '0');
+// A dé-commenter pour upload sur la bdd
+
 class Dump
 {
-
-    private static $user = "guillaume.grisolet";
-    private static $pass = "guigui";
-    private static $database = "guillaume.grisolet_db";
-    private static $host = "sqletud.u-pem.fr";
-    private static $pdo;
 
     public static function load($path)
     {
@@ -23,31 +19,31 @@ class Dump
         fclose($file);
     }
 
+    /*$liste = array();
+    while ($ligne = $req->fetch(PDO::FETCH_OBJ)) {
+        $these = new These();
+        $api = new JsonObj();
+        $these->setAuthor($ligne->author);
+        $these->setAuthorId($ligne->author_id);
+        $these->setTitle($ligne->title);
+        $these->setTheseDirector($ligne->these_director);
+        $these->setTheseDirectorInFirstName($ligne->these_director_in_first_name);
+        $these->setDirectorId($ligne->director_id);
+        $these->setLocationSustenance($ligne->location_sustenance);
+        $these->setLocationId($ligne->location_id);
+        $these->setDiscipline($ligne->discipline);
+        $these->setStatus($ligne->these_status);
+        $these->setDateFirstInscriptionDoc($ligne->date_first_inscription_doc);
+        $these->setDateSustenance($ligne->date_sustenance);
+        $these->setTheseLanguage($ligne->these_language);
+        $these->setTheseId($ligne->these_id);
+        $these->setOnlineAccessibility($ligne->online_accessibility);
+        $these->setDatePublication($ligne->date_publication);
+        $these->setDateUpdateThese($ligne->date_update_these);
+        $api->setThese($these);
+        array_push($liste, $api);
+    }*/
 
-    public static function theseByAuthorTable($author){
-        $pdo = self::getPdo();
-        $sqlAuthor = "SELECT * FROM public.theses_db WHERE author LIKE :author";
-        $stmt = $pdo->prepare($sqlAuthor);
-        $stmt->bindParam(":author", $author);
-        $stmt->execute();
-        return $stmt;
-    }
-
-    public static function printTheseAuthor($stmt)
-    {
-        $result = $stmt->fetchAll();
-
-        // Affichage des données récoltées par ligne
-        foreach ($result as $row) {
-            echo "<tr>";
-            echo "<td>" . $row['author'] . "</td>";
-            echo "<td>" . $row['title'] . "</td>";
-            echo "<td>" . $row['these_director'] . "</td>";
-            echo "<td>" . $row['discipline'] . "</td>";
-
-            echo "</tr>";
-        }
-    }
 
     public function createTheseWithList($array): These
    {
@@ -86,70 +82,85 @@ class Dump
     }
 
    public function addToBDD(These $these){
-        echo "<br>";
-        include("../php/connexion.inc.php");
-
-        $author = $these->getAuthor();
+       echo "<br>";
+       include("../php/connexion.inc.php");
+       $author = $these->getAuthor();
+       $authorId = $these->getAuthorId();
+       $title = $these->getTitle();
+       $theseDirector = $these->getTheseDirector();
+       $theseDirectorInFirstName = $these->getTheseDirectorInFirstName();
+       $directorId = $these->getDirectorId();
+       $locationSustenance = $these->getLocationSustenance();
+       $locationId = $these->getLocationId();
+       $discipline = $these->getDiscipline();
+       $theseStatus = $these->getStatus();
+       $dateFirstInscriptionDoc = self::correctDate($these->getDateFirstInscriptionDoc());
+       $dateSustenance = self::correctDate($these->getDateSustenance());
+       $theseLanguage = $these->getTheseLanguage();
+       $theseId = $these->getTheseId();
+       $onlineAccessibility = $these->getOnlineAccessibility();
+       if($dateSustenance == ""){
+           $dateSustenance = NULL;
+       }
+       $datePublication = self::correctDate($these->getDatePublication());
+       if($datePublication== ""){
+           $datePublication = NULL;
+       }
+       $dateUpdateThese = self::correctDate($these->getDateUpdateThese());
+        /*
         echo "<br>Author:";
         echo $author;
-        $authorId = $these->getAuthorId();
+
         echo "<br>Author ID:";
         echo $authorId;
-        $title = $these->getTitle();
+
         echo "<br>Title:";
         echo $title;
-        $theseDirector = $these->getTheseDirector();
+
         echo "<br>Director";
         echo $theseDirector;
-        $theseDirectorInFirstName = $these->getTheseDirectorInFirstName();
+
         echo "<br>Director In First Name:";
         echo $theseDirectorInFirstName;
-        $directorId = $these->getDirectorId();
+
         echo "<br>Director ID:";
         echo $directorId;
-        $locationSustenance = $these->getLocationSustenance();
+
         echo "<br>Location Sustenance:";
         echo $locationSustenance;
-        $locationId = $these->getLocationId();
+
         echo "<br>Location ID:";
         echo $locationId;
-        $discipline = $these->getDiscipline();
+
         echo "<br>Discipline:";
         echo $discipline;
-        $theseStatus = $these->getStatus();
+
         echo "<br>These Status:";
         echo $theseStatus;
-        $dateFirstInscriptionDoc = self::correctDate($these->getDateFirstInscriptionDoc());
+
         echo "<br>First Inscription Doc:";
         echo $dateFirstInscriptionDoc;
 
-        $dateSustenance = self::correctDate($these->getDateSustenance());
-        if($dateSustenance == ""){
-            $dateSustenance = NULL;
-        }
+
+
         echo "<br>Date Sustenance:";
         echo $dateSustenance;
 
-        $theseLanguage = $these->getTheseLanguage();
-        $theseId = $these->getTheseId();
-        $onlineAccessibility = $these->getOnlineAccessibility();
+
         echo "<br>Online Accessibility:";
         echo $onlineAccessibility;
 
-        $datePublication = self::correctDate($these->getDatePublication());
-        if($datePublication== ""){
-            $datePublication = NULL;
-        }
+
         echo "<br>Date Publication:";
         echo $datePublication;
 
-        $dateUpdateThese = self::correctDate($these->getDateUpdateThese());
+
         echo "<br>Date Update These:";
         echo $dateUpdateThese;
 
         echo "<br>";
         echo "<br>";
-        echo "<br>";
+        echo "<br>";*/
         $req = $cnx->prepare('INSERT INTO theses_db
         (author,
         author_id,
@@ -214,18 +225,11 @@ class Dump
         }
 
    }
-
-    public static function getPdo(): PDO
-    {
-        if (self::$pdo === null) {
-            try {
-                self::$pdo = new PDO('pgsql:host=' .Dump::$host . ';dbname=' . Dump::$database, Dump::$user, Dump::$pass);
-            } catch (PDOException $e) {
-                echo "ERREUR : La connexion a échouée<br>\n";
-                echo $e->getMessage() . "<br>\n";
-            }
-        }
-        return self::$pdo;
-    }
+   public static function setDataMap($path){
+       $file = file_get_contents($path);
+       header("Content-Type: application/json; charset=utf-8");
+       include("../api/JsonFormat.php");
+       JsonFormat::prettyPrint($file);
+   }
 
 }

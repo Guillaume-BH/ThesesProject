@@ -16,8 +16,6 @@ var currentPage = 0;
 const linePerPage = 10;
 /** Id de la table de résultat. */
 const idResults = "table-result";
-/** Id de la zone d'affichage du nombre de résultat. */
-const idResultCount = "result-count";
 
 
 
@@ -45,15 +43,15 @@ function initPageManager() {
 
     for (let i = 0; i < tableElem.children.length; i++) {
         let rowElem = tableElem.children[i];
-        // console.log(tableElem.children[i].innerHTML);
+        console.log(tableElem.children[i].innerHTML);
         rowElem.id = `row_${currentRowNum++}`;
         row = new RowData(rowElem);
         lines.push(row);
         linesMap.set(rowElem.id, row);
-        // console.log(linesMap);
+        console.log(linesMap);
         lastInsteredRow = row;
     }
-    // console.log(linesMap);
+    console.log(linesMap);
     loadPage();
 }
 
@@ -69,5 +67,19 @@ function loadPage() {
         tableElem.appendChild(rowData.row);
     }
 }
+
+function dynamicMenu() {
+    var x = document.getElementById(idResults);
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
+}
+
+
+
+
+
 
 

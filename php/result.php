@@ -5,75 +5,215 @@
     <?php
     include("../api/header.php");
     ?>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-
     <title>Theses Eiffel</title>
 </head>
-
-<body>
-    <header>
-        <button>EN</button>
-        <button>FR</button>
-        <button>SE CONNECTER</button>
-        <button>?</button>
-        <section class="logo">
+<header>
+    <button>EN</button>
+    <button>FR</button>
+    <button>SE CONNECTER</button>
+    <button>?</button>
+    <section class="logo">
+        <a href="index.html">
             <img src="http://theses.fr/images/theses.gif">
-        </section>
-    </header>
-</body>
+        </a>
+
+    </section>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="javascript:void(0)" class="redirectionCamembert" onclick="camembertDisplay()">Camembert</a>
+        <a href="javascript:void(0)" class="redirectionMap" onclick="mapDisplay()">Map</a>
+    </div>
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Statistics</span>
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Haut de la page</button>
+
+</header>
+<body>
 
 
-<figure class="highcharts-figure">
-    <div id="container"></div>
-    <p class="highcharts-description">
-        <?php echoPieDiscipline(); ?>
-        <script>initPageManager();</script>
-        <script>createPieDiscipline(lines);</script>
-    </p>
-</figure>
+<section id="graphic">
+    <div id="map"></div>
+    <div id="camembert"></div>
+</section>
+
+<section id="result">
+    <?php
+    $list = array();
+    if (!empty($_GET['search_these'])) {
+        $result = $_GET['search_these'];
+        $req = PdoAccess::theseByAuthorTable($result);
+        $list = PdoAccess::printTheseAuthor($req);}
+    ?>
+</section>
 
 
-<?php
 
 
 
-if (!empty($_GET['search_these'])) {
-    $result = $_GET['search_these'];
-    $req = Dump::theseByAuthorTable($result);
+    <script>
+        // Creation du graphique.
+        Highcharts.chart('camembert', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Discipline'
+            },
+            subtitle: {
+                text: 'Les discplines des thèses obtenus par rapport à la recherche.'
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                },
+                point: {
+                    valueSuffix: ''
+                }
+            },
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: {point.y:.1f}'
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> of total<br/>'
+            },
+            series: [
+                {
+                    name: "discipline",
+                    colorByPoint: true,
+                    data: [
+                        <?php
+                        foreach ($list as $key=>$value){
+                            echo '{name:"'.$key.'",y:'.$value.'},';
+                        }
+                        ?>
+                    ]
+                }
+            ]
+        });
+    </script>
 
-    Dump::printTheseAuthor($req);
-    $liste = array();
-    while ($ligne = $req->fetch(PDO::FETCH_OBJ)) {
-        $these = new These();
-        $api = new JsonObj();
-        $these->setAuthor($ligne->author);
-        $these->setAuthorId($ligne->author_id);
-        $these->setTitle($ligne->title);
-        $these->setTheseDirector($ligne->these_director);
-        $these->setTheseDirectorInFirstName($ligne->these_director_in_first_name);
-        $these->setDirectorId($ligne->director_id);
-        $these->setLocationSustenance($ligne->location_sustenance);
-        $these->setLocationId($ligne->location_id);
-        $these->setDiscipline($ligne->discipline);
-        $these->setStatus($ligne->these_status);
-        $these->setDateFirstInscriptionDoc($ligne->date_first_inscription_doc);
-        $these->setDateSustenance($ligne->date_sustenance);
-        $these->setTheseLanguage($ligne->these_language);
-        $these->setTheseId($ligne->these_id);
-        $these->setOnlineAccessibility($ligne->online_accessibility);
-        $these->setDatePublication($ligne->date_publication);
-        $these->setDateUpdateThese($ligne->date_update_these);
-        $api->setThese($these);
-        array_push($liste, $api);
+<script>
+    // Initialize the chart
+    Highcharts.mapChart('map', {
+
+        chart: {
+            map: 'countries/fr/fr-all',
+            backgroundColor:'#294688'
+        },
+
+        title: {
+            text: 'Carte',
+            style: { "color": "white"}
+        },
+
+        mapNavigation: {
+            enabled: false
+        },
+
+        tooltip: {
+            headerFormat: '',
+            pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
+        },
+
+        series: [{
+            name: 'Basemap',
+            borderColor: '#A0A0A0',
+            nullColor: 'rgba(200, 200, 200, 0.3)',
+            showInLegend: false
+        }, {
+            name: 'Separators',
+            type: 'mapline',
+            nullColor: '#707070',
+            showInLegend: false,
+            enableMouseTracking: false
+        }, {
+            // Specify points using lat/lon
+            type: 'mappoint',
+            name: '',
+            color: Highcharts.getOptions().colors[1],
+            data:
+                [
+                    <?php
+                    foreach ($list as $key=>$value){
+                        echo '{name:"'.$key.'",y:'.$value.'},';
+                    }
+                    ?>
+                ]
+        }]
+    });
+
+</script>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+    <script>
+        //Get the button
+        var mybutton = document.getElementById("myBtn");
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+    <script>
+        function camembertDisplay(){
+            const camambert = document.getElementById("camembert");
+            const map = document.getElementById("map");
+            console.log("Display map: "+map.style.display);
+            if(camambert.style.display === "none"){
+                camambert.style.display = "block";
+                if(map.style.display === "none" || map.style.display === '' || map.style.display === null){
+                    camambert.style.marginTop = '1%';
+                } else {
+                    camambert.style.marginTop = '-25%';
+                }
+                camambert.scrollIntoView();
+            } else {
+                camambert.style.display = "none";
+            }
+        }
+    </script>
+
+<script>
+    function mapDisplay(){
+        const map = document.getElementById("map");
+        const camambert = document.getElementById("camembert");
+        if(map.style.display === "none"){
+            map.style.display = "block";
+            if(camambert.style.display === "none" || camambert.style.display === '' || camambert.style.display === null){
+                camambert.style.marginTop = '1%';
+            } else {
+                camambert.style.marginTop = '-25%';
+            }
+            map.scrollIntoView();
+        } else {
+            camambert.style.marginTop = '1%';
+            map.style.display = "none";
+        }
     }
-}
-
-
-?>
-
-
-
-
+</script>
+</body>
 </html>
