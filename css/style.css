@@ -2,12 +2,16 @@ header{
     margin-top: auto;
 }
 
-#form{
-    margin-right: 20%;
-    margin-top: 5%;
-    margin-left: 30%;
+#searching{
+    padding-left: 40%;
+}
+
+.noValue{
     text-align: center;
-    margin-bottom: 30%;
+}
+
+.numberResult{
+    text-align: center;
 }
 
 .nav #myLinks {
@@ -20,14 +24,13 @@ header{
     margin-top: -25%;
 }
 
+#filter {
+
+}
+
 #map {
     display: none;
     margin-right: 50%;
-}
-
-
-.filter{
-    text-align: center;
 }
 
 .logo{

@@ -40,7 +40,13 @@
     $list = array();
     if (!empty($_GET['search_these'])) {
         $result = $_GET['search_these'];
-        $req = PdoAccess::theseByAuthorTable($result);
+        $req = null;
+        if(!empty($_GET['onlyOnline'])){
+            $req = PdoAccess::theseByAuthorTable($result, $_GET['onlyOnline']);
+        } else {
+            $req = PdoAccess::theseByAuthorTable($result, null);
+        }
+
         $list = PdoAccess::printTheseAuthor($req);}
     ?>
 </section>

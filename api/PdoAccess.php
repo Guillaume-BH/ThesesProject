@@ -10,9 +10,14 @@ class PdoAccess
     private static $pdo;
 
 
-    public static function theseByAuthorTable($author_name){
+    public static function theseByAuthorTable($author_name, $onlineAccess){
         $pdo = self::getPdo();
-        $sqlAuthor = "SELECT * FROM public.theses_db WHERE theses_db.author LIKE '%".$author_name."%'";
+        $sqlAuthor = null;
+        if($onlineAccess != null) {
+            $sqlAuthor .= "SELECT * FROM public.theses_db WHERE online_accessibility == 'oui' theses_db.author LIKE '%".$author_name."%'" ;
+        } else {
+            $sqlAuthor .= "SELECT * FROM public.theses_db WHERE theses_db.author LIKE '%".$author_name."%'" ;
+        }
         $stmt = $pdo->prepare($sqlAuthor);
         $stmt->execute();
         return $stmt;
@@ -46,26 +51,33 @@ class PdoAccess
         $list = array();
         $result = $stmt->fetchAll();
         // Affichage des données récoltées par ligne
-        foreach ($result as $row) {
+        $len = count($result);
+        echo '<div class="numberResult">
+              <h4>Nombre de résultat: '.$len.'</h4>
+              </div>';
+        if($result != null){
+            foreach ($result as $row) {
 
-            if(isset($list[$row['discipline']])){
-                $list[$row['discipline']]++;
-            } else {
-                $list[$row['discipline']] = 1;
-            }
+                if(isset($list[$row['discipline']])){
+                    $list[$row['discipline']]++;
+                } else {
+                    $list[$row['discipline']] = 1;
+                }
 
-            echo "<div class='rectangle'>
+                echo "<div class='rectangle'>
                     <p>".$row['author']."</p>
                     <p>".$row['author_id']."</p>
                     <p>".$row['title']."</p>
                     <p>".$row['discipline']."</p>
                     </div>";
-            echo "<br>";
-
-
-
-
+                echo "<br>";
+            }
+        } else {
+            echo '<div class="noValue">
+                   <h1>Aucune donnée trouvée !</h1> 
+                </div>';
         }
+
         return $list;
     }
 }
