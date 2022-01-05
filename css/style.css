@@ -7,11 +7,19 @@ header{
 }
 
 .noValue{
+
     text-align: center;
+}
+
+#btnGraphic{
+    margin-left: 43%;
+    margin-bottom: 2%;
 }
 
 .numberResult{
     text-align: center;
+    margin-bottom: 2%;
+    margin-top: 2%;
 }
 
 .nav #myLinks {
@@ -24,10 +32,6 @@ header{
     margin-top: -25%;
 }
 
-#filter {
-
-}
-
 #map {
     display: none;
     margin-right: 50%;
@@ -36,6 +40,7 @@ header{
 .logo{
     margin-top: 2%;
     text-align: center;
+    margin-bottom: 2%;
 }
 
 .footer-text{

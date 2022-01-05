@@ -223,13 +223,27 @@ class Dump
             echo "Non";
             print_r($req);
         }
-
    }
+
+
    public static function setDataMap($path){
        $file = file_get_contents($path);
-       header("Content-Type: application/json; charset=utf-8");
        include("../api/JsonFormat.php");
-       JsonFormat::prettyPrint($file);
+       include("../api/PdoAccess.php");
+       $decode = json_decode($file, true);
+       //JsonFormat::prettyPrint($file);
+       foreach ($decode as $result){
+           if(isset($result['fields']['identifiant_idref'])){
+               echo 'Longitude: '.$result['fields']['coordonnees'][1].'<br>';
+               echo 'Latitude: '.$result['fields']['coordonnees'][0].'<br>';
+               echo 'ID:'.$result['fields']['identifiant_idref'].'<br>';
+               PdoAccess::insertCoordinates($result['fields']['coordonnees'][1], $result['fields']['coordonnees'][0], $result['fields']['identifiant_idref']);
+               echo '<br>';
+               echo '<br>';
+           }
+
+       }
    }
+
 
 }

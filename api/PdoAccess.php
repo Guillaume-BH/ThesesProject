@@ -23,6 +23,14 @@ class PdoAccess
         return $stmt;
     }
 
+    public static function theseLocation($locationId){
+        $pdo = self::getPdo();
+        $sql = "SELECT * FROM public.theses_db_coord WHERE theses_db_coord.location_id LIKE '%".$locationId."%'" ;
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public static function getPdo(): PDO
     {
         if (self::$pdo === null) {
@@ -46,6 +54,23 @@ class PdoAccess
         return substr($date_param, 6, 9).substr($date_param, 2, 3).substr($date_param, -5, -4).substr($date_param, 0, 2);
     }
 
+    public static function insertCoordinates($longitude,$latitude,$locationId){
+        $pdo = self::getPdo();
+        $sql = "INSERT INTO theses_db_coord (longitude,latitude,location_id) VALUES (:longitude, :latitude, :locationId)";
+        $req = $pdo->prepare($sql);
+        $req->bindParam('longitude', $longitude);
+        $req->bindParam('latitude', $latitude);
+        $req->bindParam('locationId', $locationId);
+        try {
+            $req->execute();
+            echo 'Insertion réussit !';
+        } catch (\Throwable $th) {
+            echo "Insertion échouée !";
+        }
+
+
+    }
+
     public static function printTheseAuthor($stmt)
     {
         $list = array();
@@ -53,7 +78,8 @@ class PdoAccess
         // Affichage des données récoltées par ligne
         $len = count($result);
         echo '<div class="numberResult">
-              <h4>Nombre de résultat: '.$len.'</h4>
+                
+                    <h4>Nombre de résultat: '.$len.'</h4>
               </div>';
         if($result != null){
             foreach ($result as $row) {
@@ -77,7 +103,6 @@ class PdoAccess
                    <h1>Aucune donnée trouvée !</h1> 
                 </div>';
         }
-
         return $list;
     }
 }

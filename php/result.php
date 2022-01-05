@@ -16,14 +16,35 @@
         <a href="index.html">
             <img src="http://theses.fr/images/theses.gif">
         </a>
-
     </section>
+    <section id="searching">
+        <form action="../php/result.php" class="row g-3 needs-validation" novalidate method="get">
+            <div class="nav justify-content">
+                <div class="col-auto">
+                    <input type="search" class="form-control" id="search_these" placeholder="Thèse" name="search_these">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-3">Rechercher</button>
+                </div>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" id="flexCheckChecked" name="onlyOnline">
+                <label class="form-check-label" for="flexCheckChecked">
+                    Uniquement les thèses soutenues accessibles en ligne
+                </label>
+            </div>
+        </form>
+    </section>
+
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="javascript:void(0)" class="redirectionCamembert" onclick="camembertDisplay()">Camembert</a>
         <a href="javascript:void(0)" class="redirectionMap" onclick="mapDisplay()">Map</a>
     </div>
-    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Statistics</span>
+    <div id="btnGraphic">
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Graphiques</span>
+    </div>
+
     <button onclick="topFunction()" id="myBtn" title="Go to top">Haut de la page</button>
 
 </header>
@@ -37,17 +58,35 @@
 
 <section id="result">
     <?php
-    $list = array();
+    $listThese = array();
+    $listDiscipline = array();
+    $coordinates = array();
     if (!empty($_GET['search_these'])) {
         $result = $_GET['search_these'];
-        $req = null;
+        $request = null;
+
         if(!empty($_GET['onlyOnline'])){
-            $req = PdoAccess::theseByAuthorTable($result, $_GET['onlyOnline']);
+            $request = PdoAccess::theseByAuthorTable($result, $_GET['onlyOnline']);
         } else {
-            $req = PdoAccess::theseByAuthorTable($result, null);
+            $request = PdoAccess::theseByAuthorTable($result, null);
+        }
+        $theseList = ($request->fetchAll());
+        foreach ($theseList as $these){
+            var_dump($these[7]);
+            echo '<br> <br> <br> <br>';
+            $coordinates = PdoAccess::theseLocation($these[7])->fetchAll();
         }
 
-        $list = PdoAccess::printTheseAuthor($req);}
+        if(!empty($_GET['onlyOnline'])){
+            $request = PdoAccess::theseByAuthorTable($result, $_GET['onlyOnline']);
+        } else {
+            $request = PdoAccess::theseByAuthorTable($result, null);
+        }
+
+        $listDiscipline = PdoAccess::printTheseAuthor($request);
+
+
+    }
     ?>
 </section>
 
@@ -93,7 +132,7 @@
                     colorByPoint: true,
                     data: [
                         <?php
-                        foreach ($list as $key=>$value){
+                        foreach ($listDiscipline as $key=> $value){
                             echo '{name:"'.$key.'",y:'.$value.'},';
                         }
                         ?>
@@ -123,7 +162,7 @@
 
         tooltip: {
             headerFormat: '',
-            pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
+            pointFormat: '<b>{point.name}</b>Lat: {point.lat}, Lon: {point.lon}'
         },
 
         series: [{
@@ -145,8 +184,9 @@
             data:
                 [
                     <?php
-                    foreach ($list as $key=>$value){
-                        echo '{name:"'.$key.'",y:'.$value.'},';
+
+                    foreach ($coordinates as $value){
+                        echo '{name:"'.$value[3].'",Lat:'.$value[0].'", Lon:'.$value[1].'},';
                     }
                     ?>
                 ]
