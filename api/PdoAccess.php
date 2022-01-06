@@ -25,10 +25,11 @@ class PdoAccess
 
     public static function theseLocation($locationId){
         $pdo = self::getPdo();
-        $sql = "SELECT * FROM public.theses_db_coord WHERE theses_db_coord.location_id LIKE '%".$locationId."%'" ;
+        $sql = "SELECT * FROM public.theses_db_coord WHERE theses_db_coord.location_id = '".$locationId."'" ;
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
-        return $stmt;
+        $res = $stmt->fetchAll();
+        return $res;
     }
 
     public static function getPdo(): PDO
@@ -78,7 +79,7 @@ class PdoAccess
         // Affichage des données récoltées par ligne
         $len = count($result);
         echo '<div class="numberResult">
-                
+               
                     <h4>Nombre de résultat: '.$len.'</h4>
               </div>';
         if($result != null){
